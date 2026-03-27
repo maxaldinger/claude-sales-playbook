@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales AI Toolkit — Claude Playbook for B2B Sales Teams</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface2: #1d1f25;
+    --border: #2a2d35;
+    --accent: #e8622a;
+    --accent2: #f0a070;
+    --text: #e8e9ec;
+    --text-muted: #7a7f8e;
+    --text-dim: #4a4f5e;
+    --green: #4ade80;
+    --code-bg: #0a0b0d;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-badge {
+    background: var(--accent);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .header-title { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+  .header-sub { font-size: 12.5px; color: var(--text-muted); font-weight: 300; margin-top: 2px; }
+  .header-meta { font-family: 'DM Mono', monospace; font-size: 10.5px; color: var(--text-dim); }
+
+  .layout { display: flex; height: calc(100vh - 77px); }
+
+  .sidebar {
+    width: 248px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 16px 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    padding: 4px 20px 6px;
+    font-size: 9.5px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    margin-top: 18px;
+  }
+  .sidebar-section:first-child { margin-top: 4px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: all 0.12s;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    border-left: 2px solid transparent;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(232,98,42,0.08); color: var(--accent2); border-left-color: var(--accent); }
+  .nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+  .method-tag {
+    margin-left: auto;
+    font-size: 8.5px;
+    font-family: 'DM Mono', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .main { flex: 1; overflow-y: auto; padding: 36px 52px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .doc-header { margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+  .doc-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 8px; }
+  .doc-title { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .doc-desc { font-size: 14px; color: var(--text-muted); font-weight: 300; line-height: 1.55; }
+
+  .method-badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .method-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 9px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .badge-sandler { color: #60a5fa; border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.06); }
+  .badge-meddic { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.06); }
+  .badge-force { color: #34d399; border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.06); }
+  .badge-general { color: var(--accent2); border-color: rgba(240,160,112,0.3); background: rgba(240,160,112,0.06); }
+
+  .code-block {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 18px 0;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-filename { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    transition: all 0.12s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+  .code-block pre {
+    padding: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.72;
+    color: #c0c4d0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 26px 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .info-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 14px 0;
+  }
+  .info-box strong { color: var(--accent2); font-weight: 500; }
+
+  .step-list { list-style: none; counter-reset: steps; margin: 12px 0; }
+  .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(steps);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-list li strong { color: var(--text); font-weight: 500; }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .card-icon { font-size: 20px; margin-bottom: 8px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .card-body { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; font-weight: 300; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
+  .chip {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  p { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin: 8px 0; font-weight: 300; }
+  code { font-family: 'DM Mono', monospace; font-size: 11.5px; background: var(--surface2); border: 1px solid var(--border); padding: 2px 6px; border-radius: 3px; color: var(--accent2); }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo-badge">Sales AI</div>
+    <div>
+      <div class="header-title">Claude Toolkit for B2B Sales Teams</div>
+      <div class="header-sub">SOUL.md · CLAUDE.md · Skills for Sandler · MEDDIC · Force Management</div>
+    </div>
+  </div>
+  <div class="header-meta">v1.0 · github.com</div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Foundation</div>
+    <div class="nav-item active" onclick="show('overview', this)"><span class="nav-icon">⚡</span> Overview</div>
+    <div class="nav-item" onclick="show('soul', this)"><span class="nav-icon">🧠</span> SOUL.md <span class="method-tag">setup</span></div>
+    <div class="nav-item" onclick="show('playbook', this)"><span class="nav-icon">📋</span> CLAUDE.md <span class="method-tag">setup</span></div>
+
+    <div class="sidebar-section">Skills</div>
+    <div class="nav-item" onclick="show('skill-discovery', this)"><span class="nav-icon">🔍</span> Discovery <span class="method-tag">Sandler</span></div>
+    <div class="nav-item" onclick="show('skill-meddic', this)"><span class="nav-icon">🎯</span> Deal Qualifier <span class="method-tag">MEDDIC</span></div>
+    <div class="nav-item" onclick="show('skill-cotm', this)"><span class="nav-icon">💬</span> Value Messaging <span class="method-tag">Force</span></div>
+    <div class="nav-item" onclick="show('skill-lou', this)"><span class="nav-icon">📄</span> LOU Generator</div>
+    <div class="nav-item" onclick="show('skill-followup', this)"><span class="nav-icon">✉️</span> Follow-Up Email</div>
+    <div class="nav-item" onclick="show('skill-map', this)"><span class="nav-icon">🗺️</span> Mutual Action Plan</div>
+    <div class="nav-item" onclick="show('skill-objection', this)"><span class="nav-icon">🛡️</span> Objection Handler</div>
+
+    <div class="sidebar-section">Rollout</div>
+    <div class="nav-item" onclick="show('setup', this)"><span class="nav-icon">🚀</span> Setup Guide</div>
+  </nav>
+
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="doc-header">
+        <div class="doc-label">Getting Started</div>
+        <div class="doc-title">Why This Toolkit Exists</div>
+        <div class="doc-desc">Giving reps Claude access without structure is like giving them a blank CRM. The difference between "we have AI" and "we use AI well" is about two hours of setup.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-sandler">Sandler</span>
+          <span class="method-badge badge-meddic">MEDDIC</span>
+          <span class="method-badge badge-force">Force Management</span>
+          <span class="method-badge badge-general">General</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>The problem:</strong> Raw Claude has zero context about your company, your buyer, your methodology, or what good looks like in your sales motion. Reps get generic outputs, stop trusting the tool, and go back to winging it.
+      </div>
+
+      <div class="section-title">What's In This Toolkit</div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🧠</div>
+          <div class="card-title">SOUL.md</div>
+          <div class="card-body">Your company's identity, voice, products, and buyer context. Paste it into Claude Project Instructions once — every conversation inherits it automatically.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <div class="card-title">CLAUDE.md</div>
+          <div class="card-body">The rep-facing operating manual. What Claude is good at, what it's not, and how to get outputs worth sending in under 2 minutes.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <div class="card-title">Discovery Prep</div>
+          <div class="card-body">Brief Claude on a prospect. Get tailored questions using Sandler's pain funnel, likely objections, and a quick industry brief before you dial.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">Deal Qualifier</div>
+          <div class="card-body">Run your deal through the full MEDDIC framework. Claude surfaces gaps, flags risk, and tells you what's missing before it costs you a quarter.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💬</div>
+          <div class="card-title">Value Messaging</div>
+          <div class="card-body">Force Management's Command of the Message. Build a Before/After/Bridge narrative tied to business outcomes — not features.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗺️</div>
+          <div class="card-title">Mutual Action Plan</div>
+          <div class="card-body">Turn meeting notes into a structured MAP with milestones, owners, and dates. The document that separates real deals from pipeline hallucinations.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📄</div>
+          <div class="card-title">LOU Generator</div>
+          <div class="card-body">Paste raw meeting notes, get a formatted Letter of Understanding. Documents mutual agreement before a formal order — flags missing fields automatically.</div>
+        </div>
+      </div>
+
+      <div class="section-title">Methodology Coverage</div>
+      <p>Each skill is labeled with the methodology it draws from. Mix and match — most good sales motions borrow from all three. Use Sandler for discovery and pain development, MEDDIC for qualification rigor and forecast accuracy, and Force Management for value messaging and competitive differentiation.</p>
+
+      <div class="section-title">Setup Takes About 2 Hours</div>
+      <ol class="step-list">
+        <li><strong>Fill in SOUL.md</strong> with your company, products, buyers, and voice. The template is in the next tab.</li>
+        <li><strong>Create a Claude Project</strong> and paste SOUL.md into Project Instructions.</li>
+        <li><strong>Share CLAUDE.md</strong> anywhere your team will actually find it — Slack, Notion, SharePoint.</li>
+        <li><strong>Run a 20-minute demo</strong> with a real deal. Show input → output live. Let reps try it themselves.</li>
+        <li><strong>Start with 2 skills</strong> (Discovery + Follow-Up). Add more as you identify repetitive writing tasks.</li>
+      </ol>
+    </div>
+
+    <!-- SOUL.md -->
+    <div class="tab-content" id="tab-soul">
+      <div class="doc-header">
+        <div class="doc-label">Project Instructions</div>
+        <div class="doc-title">SOUL.md</div>
+        <div class="doc-desc">Fill in the brackets with your company's info. Paste the completed version into Claude → Projects → Project Instructions. Every conversation in that project will start fully informed.</div>
+      </div>
+
+      <div class="info-box">
+        <strong>Where it goes:</strong> Claude.ai → Projects → [Your Team Project] → Project Instructions → paste the full block below (filled in).
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">SOUL.md — Fill In & Paste Into Claude Project Instructions</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre># [Company Name] — AI Sales Assistant
+
+## Who We Are
+[2-3 sentences on what your company does, who you serve, and what 
+makes you different. Write it like you'd explain it to a smart 
+stranger at a conference — not a press release.]
+
+Example:
+"Acme Corp sells [product category] to [target buyer] in [industry]. 
+We're known for [differentiator], not feature-dumping. Our reps are 
+consultative — we lead with business outcomes, not specs."
+
+## Our Voice
+- [Describe your tone: formal/casual, technical/accessible, etc.]
+- [What do you never do? e.g. "Never oversell. If we don't know, we say so."]
+- [How do you treat objections? e.g. "We don't push through resistance, we explore it."]
+- [Buyer respect: e.g. "Our buyers are smart. We match their level."]
+
+## Our Products / Solutions
+[List your core offerings with 1-line descriptions each]
+- [Product/Solution 1]: [what it does and who it's for]
+- [Product/Solution 2]: [what it does and who it's for]
+- [Add more as needed]
+
+## Our Buyers
+### Primary Users (who uses the product daily)
+- [Role 1: what they care about]
+- [Role 2: what they care about]
+
+### Economic Buyers (who signs the check)
+- [Role: what they care about, typically ROI / risk / strategic fit]
+
+### Champions (who sells internally for us)
+- [Role: what they need from us to sell internally]
+
+### Gatekeepers
+- [Procurement, Legal, IT — what slows them down]
+
+## Key Industries / Verticals
+[List your top 3-5 target industries and one-line context on each]
+- [Industry 1]: [why they buy, what their pressures are]
+- [Industry 2]: [why they buy, what their pressures are]
+
+## Common Pain Points We Solve
+[Bullet list of 5-8 real pains your product addresses. 
+Be specific — not "inefficiency" but "engineers spending 40% of 
+their time on rework because of bad data handoffs."]
+- [Pain 1]
+- [Pain 2]
+- [Pain 3]
+
+## Deal Stages & Language
+[Use your CRM stage names and what they mean at your company]
+- Discovery: [definition]
+- Evaluation / POC: [definition]
+- Proposal: [definition]
+- Negotiation: [definition]
+- Closed Won / Lost: [definition]
+
+## Competitors We Face
+[List top 2-3 competitors and one-line positioning against each]
+- vs. [Competitor A]: [how we win / where we're better]
+- vs. [Competitor B]: [how we win / where we're better]
+
+## What You Should Always Do
+- Ask the rep to verify any specific pricing, terms, or data before sending
+- Flag missing info as [MISSING — confirm before sending]
+- Match buyer tone: more technical with practitioners, more business 
+  outcome-focused with economic buyers
+- Never invent specifics. If you don't have it, flag it.
+
+## What You Should Never Do
+- Make up numbers, dates, or commitments
+- Use jargon the buyer wouldn't use
+- Produce something that sounds like an AI wrote it
+- Be vague when specific is possible</pre>
+      </div>
+    </div>
+
+    <!-- CLAUDE.md -->
+    <div class="tab-content" id="tab-playbook">
+      <div class="doc-header">
+        <div class="doc-label">Rep Playbook</div>
+        <div class="doc-title">CLAUDE.md</div>
+        <div class="doc-desc">The operating manual for sales reps. Keep it short so they actually read it. Pin it in Slack, drop it in your team wiki, or print it and hand it out.</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">CLAUDE.md — Sales Team Operating Manual</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre># Claude Sales Playbook — How To Get Outputs Worth Using
+
+## The Golden Rule
+The more context you give Claude, the better the output.
+Two sentences of deal context beats no context every time.
+Treat it like briefing a new colleague, not Googling something.
+
+---
+
+## Always Include When Asking Claude To Write Anything
+- Who you're talking to (name, role, company, industry)
+- Where you are in the deal (discovery, eval, proposal, etc.)
+- What happened last (call, demo, email, objection)
+- What you want this output to accomplish
+- Any relevant pain, urgency, or political context you know
+
+---
+
+## What Claude Is Great At — Use These Daily
+- Discovery call prep (pain questions, industry context, likely objections)
+- Follow-up emails after any call or meeting
+- MEDDIC gap analysis on a specific deal
+- Building value messaging tied to business outcomes
+- Mutual Action Plans from meeting notes
+- Handling objections — 3 responses, different approaches
+- Translating technical details into exec-friendly language
+- Rewriting drafts to sound more human and less template-y
+- Summarizing long email threads before jumping on a call
+
+---
+
+## What Claude Is NOT
+- A replacement for your judgment and relationships
+- Always right about pricing, terms, or product specs — verify before sending
+- A way to skip discovery — AI needs context just like you do
+- Guaranteed accurate on recent news or competitor info — double-check
+
+---
+
+## The Skills (Pre-Built Prompts — Copy, Fill In, Get Output)
+
+| Skill | Methodology | Use When |
+|-------|-------------|----------|
+| Discovery Prep | Sandler | Before any first or second call |
+| Deal Qualifier | MEDDIC | Mid-cycle, before forecast calls |
+| Value Messaging | Force Management | Building a pitch or proposal |
+| Follow-Up Email | General | After any touchpoint |
+| Mutual Action Plan | General | Any time you need a MAP |
+| Objection Handler | General | When you're stuck on a pushback |
+
+---
+
+## Red Flags — Stop Before Sending
+- Claude invented a specific number, date, or commitment → remove it
+- Claude said something you can't verify → add [TBD] or cut it
+- The tone doesn't match your relationship → humanize the opener
+- It reads like a template → rewrite the first and last sentence
+
+---
+
+## The 10-Second Test
+Read it out loud. If you wouldn't say it on a call, don't send it in an email.</pre>
+      </div>
+    </div>
+
+    <!-- SKILL: Discovery -->
+    <div class="tab-content" id="tab-skill-discovery">
+      <div class="doc-header">
+        <div class="doc-label">Skill · Sandler</div>
+        <div class="doc-title">Discovery Prep</div>
+        <div class="doc-desc">Sandler's pain funnel applied to any prospect. Brief Claude on who you're calling — get a tailored question set, industry pressure brief, pain hypotheses, and likely objections before you dial.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-sandler">Sandler Pain Funnel</span>
+          <span class="method-badge badge-general">Pre-Call</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Sandler principle:</strong> You're not presenting — you're diagnosing. The goal of discovery is to uncover pain deep enough that the prospect sells themselves. These questions are built to get below surface-level answers.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-discovery-prep.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: Discovery Call Prep — Sandler Pain Funnel
+
+You are a senior B2B sales coach helping a rep prepare for an 
+upcoming discovery call using the Sandler selling methodology.
+
+Generate a concise pre-call brief the rep can review in 5 minutes.
+
+FILL IN BEFORE SUBMITTING:
+- Company name:
+- Contact name and title:
+- Industry / what they do:
+- Company size (employees or revenue if known):
+- How they came in (inbound / outbound / referral / event):
+- What product or solution is likely relevant:
+- What you already know about their situation:
+- Any known trigger events (funding, hire, reorg, competitor switch, etc.):
+
+---
+
+OUTPUT — produce all five sections:
+
+## INDUSTRY SNAPSHOT (2-3 sentences)
+[What's the current pressure in their industry that creates urgency 
+for what you solve? What trends are forcing their hand?]
+
+## PAIN HYPOTHESES
+[4-5 specific pains common to companies like this, framed the way 
+a practitioner would say it — not the way a vendor would pitch it]
+
+## SANDLER PAIN FUNNEL — QUESTION SET
+
+Surface questions (open-ended, get them talking):
+[2-3 questions about their current state and process]
+
+Pain questions (go deeper — what's the real problem?):
+[2-3 questions that surface frustration, missed goals, or cost]
+
+Impact questions (make the pain real — what does it cost?):
+[2-3 questions about time, money, opportunity cost, or risk]
+
+Emotional questions (why does this matter to THEM personally?):
+[1-2 questions about their own stake in solving this]
+
+## UPFRONT CONTRACT SUGGESTION
+[A short, specific agenda the rep can open with to set mutual 
+expectations for the call. Sandler-style: "Here's what I'd like 
+to cover, here's what I need from you, here's how we end."]
+
+## LIKELY OBJECTIONS + EARLY HANDLING
+[2-3 objections that commonly come up in discovery with this type 
+of buyer, and a brief coaching note on how to explore (not deflect) 
+each one using the Sandler approach]
+
+---
+
+FILL IN PROSPECT INFO:
+[paste here]</pre>
+      </div>
+    </div>
+
+    <!-- SKILL: MEDDIC -->
+    <div class="tab-content" id="tab-skill-meddic">
+      <div class="doc-header">
+        <div class="doc-label">Skill · MEDDIC</div>
+        <div class="doc-title">Deal Qualifier</div>
+        <div class="doc-desc">Run any deal through the full MEDDIC framework. Claude surfaces what you know, what's missing, and where the risk is — before it costs you a forecast call or a lost quarter.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-meddic">MEDDIC</span>
+          <span class="method-badge badge-meddic">Forecast Accuracy</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>MEDDIC:</strong> Metrics · Economic Buyer · Decision Criteria · Decision Process · Identify Pain · Champion. The most commonly skipped letters are Economic Buyer and Champion — which is exactly why deals slip.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-meddic-qualifier.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: MEDDIC Deal Qualifier
+
+You are a senior enterprise sales coach. A rep will share their 
+deal notes and what they know about an opportunity. Run it through 
+the full MEDDIC qualification framework, score each component, 
+surface gaps, and give a clear recommendation on deal health.
+
+FILL IN BEFORE SUBMITTING:
+[Paste your deal notes below. Include as much as you know:
+- Company / deal name
+- Deal size and stage
+- What you know about their goals and pain
+- Who you've talked to and what they've said
+- Timeline and urgency
+- Any competition or alternatives they're considering
+- What's happened so far in the process]
+
+---
+
+OUTPUT FORMAT:
+
+## MEDDIC SCORECARD
+
+**M — Metrics**
+What we know: [extract from notes]
+What's missing: [gaps]
+Risk level: 🟢 Clear / 🟡 Partial / 🔴 Unknown
+Next question to ask: [specific question]
+
+**E — Economic Buyer**
+What we know: [who signs, have we met them?]
+What's missing: [gaps]
+Risk level: 🟢 / 🟡 / 🔴
+Next question to ask: [specific question]
+
+**D — Decision Criteria**
+What we know: [how will they evaluate and decide?]
+What's missing: [gaps]
+Risk level: 🟢 / 🟡 / 🔴
+Next question to ask: [specific question]
+
+**D — Decision Process**
+What we know: [steps, approvals, timeline, who's involved]
+What's missing: [gaps]
+Risk level: 🟢 / 🟡 / 🔴
+Next question to ask: [specific question]
+
+**I — Identify Pain**
+What we know: [quantified pain, business impact]
+What's missing: [gaps]
+Risk level: 🟢 / 🟡 / 🔴
+Next question to ask: [specific question]
+
+**C — Champion**
+What we know: [who is selling for us internally, do they have power?]
+What's missing: [gaps]
+Risk level: 🟢 / 🟡 / 🔴
+Next question to ask: [specific question]
+
+---
+
+## OVERALL DEAL HEALTH
+Score: [X/6 components well-qualified]
+Assessment: [2-3 sentences — is this deal real, at risk, or a 
+pipeline hallucination?]
+
+## TOP 3 ACTIONS THIS WEEK
+[Specific, prioritized next steps to plug the biggest MEDDIC gaps]
+
+## FORECAST RECOMMENDATION
+[Should this deal stay in forecast, be moved out, or be accelerated? 
+Give a direct recommendation with reasoning.]
+
+---
+
+PASTE DEAL NOTES:
+[paste here]</pre>
+      </div>
+    </div>
+
+    <!-- SKILL: Force Management / COTM -->
+    <div class="tab-content" id="tab-skill-cotm">
+      <div class="doc-header">
+        <div class="doc-label">Skill · Force Management</div>
+        <div class="doc-title">Value Messaging</div>
+        <div class="doc-desc">Command of the Message applied to any deal. Build a Before/After/Bridge narrative tied to business outcomes, not features. Use it for pitches, proposals, executive summaries, or champion enablement.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-force">Command of the Message</span>
+          <span class="method-badge badge-force">Force Management</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Force Management principle:</strong> Buyers don't buy products — they buy a better future. Your job is to make the "before" painful enough and the "after" credible enough that doing nothing becomes the worst option.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-value-messaging.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: Value Messaging — Force Management Command of the Message
+
+You are a Force Management-trained sales coach helping a rep build 
+differentiated value messaging for a specific deal or buyer.
+
+The output should help the rep tell a compelling before/after story 
+tied to measurable business outcomes — not product features.
+
+FILL IN BEFORE SUBMITTING:
+- Company name:
+- Economic buyer (name, title):
+- Their stated business problem or goal:
+- What metrics matter to them (revenue, cost, time, risk, compliance, etc.):
+- Specific pain you've uncovered (quote them if possible):
+- Your solution / product:
+- Proof points you have (case studies, similar customers, data):
+- Key competitors or alternatives they're considering:
+- Their required capabilities (what must the solution do):
+
+---
+
+OUTPUT FORMAT:
+
+## REQUIRED CAPABILITIES → DIFFERENTIATORS MAP
+[For each required capability the buyer has stated, map to your 
+specific differentiator and why it beats the alternative]
+- [Capability 1] → [Your differentiator] → [Why it wins]
+- [Capability 2] → [Your differentiator] → [Why it wins]
+
+## BEFORE SNAPSHOT (the painful present)
+[3-5 bullet points describing their current state in their language.
+Make it specific to what you've heard. The reader should wince.]
+
+## AFTER SNAPSHOT (the compelling future)
+[3-5 bullet points describing the measurably better state your 
+solution creates. Tie each to a business metric where possible.]
+
+## PROOF POINT
+[1-2 sentences: a real example (customer, data, case study) that 
+makes the "after" credible. If you don't have one, flag it as 
+[MISSING — find a proof point before the next executive meeting]]
+
+## NEGATIVE CONSEQUENCES OF INACTION
+[What happens if they do nothing or go with the status quo?
+Make the cost of the alternative real. Use their words where possible.]
+
+## EXECUTIVE SUMMARY (3 sentences)
+[A version of this story a CFO or CEO could read in 15 seconds 
+and understand why this matters to the business — no jargon, 
+no product names, just outcomes.]
+
+## CHAMPION ENABLEMENT TALKING POINTS
+[3-5 bullet points your internal champion can use to sell this 
+upward without you in the room]
+
+---
+
+FILL IN DEAL INFO:
+[paste here]</pre>
+      </div>
+    </div>
+
+    <!-- SKILL: Follow-Up Email -->
+    <div class="tab-content" id="tab-skill-followup">
+      <div class="doc-header">
+        <div class="doc-label">Skill · General</div>
+        <div class="doc-title">Follow-Up Email Generator</div>
+        <div class="doc-desc">Turn call notes into a sent-worthy follow-up in under 2 minutes. Works for post-discovery, post-demo, post-proposal, post-objection, or re-engagement.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-general">Any Stage</span>
+          <span class="method-badge badge-general">Any Buyer</span>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-followup-email.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: Follow-Up Email Generator
+
+You are a B2B sales assistant helping a rep write a follow-up email 
+after a sales conversation. The output should sound like a real human 
+wrote it — not a template. No filler. No "per my last email."
+
+FILL IN BEFORE SUBMITTING:
+- Who you're writing to (name, title, company):
+- Type of meeting (discovery / demo / eval / proposal review / re-engagement):
+- What was discussed (paste notes or summarize key points):
+- Deal stage (early / mid / late):
+- Tone (formal / semi-formal / casual — match your relationship):
+- The single next step (who owns it, when):
+- Anything personal to reference (something they mentioned, shared interest):
+- Any urgency or deadline relevant to include:
+
+---
+
+OUTPUT FORMAT:
+
+Subject: [specific — not "Following up" — reference the actual topic]
+
+[Email body — 3-5 short paragraphs max]
+
+RULES:
+- Open with something specific from the conversation — not "great speaking with you today"
+- Paragraph 1: One-line recap of what you aligned on
+- Paragraph 2: Any resource, info, or commitment you said you'd send
+- Paragraph 3: One clear next step with a soft CTA — don't give them multiple options
+- Close warmly — match the relationship
+- No buzzwords: no "synergy," "circle back," "touch base," "value-add," "solution"
+- If there's real urgency, include it — don't manufacture it
+- If the deal stage is late, reflect appropriate gravity without being pushy
+- Under 200 words unless the situation requires more
+
+FILL IN YOUR CONTEXT:
+[paste here]</pre>
+      </div>
+
+      <div class="section-title">Works For</div>
+      <div class="chip-row">
+        <span class="chip">post-discovery</span>
+        <span class="chip">post-demo</span>
+        <span class="chip">post-proposal</span>
+        <span class="chip">re-engagement</span>
+        <span class="chip">post-no-show</span>
+        <span class="chip">champion check-in</span>
+        <span class="chip">economic buyer intro</span>
+        <span class="chip">multi-threading</span>
+      </div>
+    </div>
+
+    <!-- SKILL: LOU -->
+    <div class="tab-content" id="tab-skill-lou">
+      <div class="doc-header">
+        <div class="doc-label">Skill · Late Stage</div>
+        <div class="doc-title">LOU Generator</div>
+        <div class="doc-desc">Paste raw meeting notes from any discovery, evaluation, or closing call — get a clean, professional Letter of Understanding ready for customer review. Missing fields are flagged automatically so nothing slips through.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-meddic">Decision Process</span>
+          <span class="method-badge badge-force">Command of the Sale</span>
+          <span class="method-badge badge-general">Late Stage</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>When to use:</strong> Any time you need to document mutual agreement before a formal order — after a closing call, a POC review, or an executive alignment meeting. A signed LOU dramatically reduces late-stage deal slippage.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-lou-generator.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: Letter of Understanding (LOU) Generator
+
+You are a B2B sales assistant helping a rep create a professional 
+Letter of Understanding from raw meeting notes.
+
+A Letter of Understanding documents what both parties have agreed 
+to — products, objectives, next steps, timeline, and open items — 
+before a formal order is placed. It is shared with the customer 
+for confirmation, not used as an internal document.
+
+FILL IN BEFORE SUBMITTING:
+[Paste your raw meeting notes below. Include whatever you have —
+bullet points, stream of consciousness, partial info. The messier 
+the input, the more useful the output.]
+
+---
+
+OUTPUT FORMAT — produce exactly this structure:
+
+---
+LETTER OF UNDERSTANDING
+[Your Company] ↔ [Customer Company]
+
+Date: [today's date or extract from notes]
+Account: [Company name]
+Primary Contact: [Name, Title]
+Our Rep: [Rep name if mentioned]
+
+PRODUCTS / SOLUTIONS UNDER DISCUSSION
+[Bullet list of products, modules, services, or solutions discussed.
+If a product name is ambiguous, use the closest match and flag with [VERIFY]]
+
+BUSINESS OBJECTIVES
+[2-4 sentences. What problem is this customer solving?
+What business outcome are they working toward?
+Use their language — not vendor language.]
+
+AGREED NEXT STEPS
+[Numbered list. One action per line.
+Format: "[Who] will [what] by [when]"
+Alternate between rep-owned and customer-owned steps.]
+
+SUCCESS CRITERIA
+[How will both parties know this evaluation or engagement was successful?
+Extract from notes. If not stated: [MISSING — align on this before sending]]
+
+TIMELINE & KEY DATES
+[Any deadlines, decision dates, go-live targets, or urgency signals mentioned.
+If none: [MISSING — confirm decision timeline on next call]]
+
+INVESTMENT SUMMARY
+[Placeholder for pricing / scope if discussed. 
+If not discussed: [MISSING — to be included in formal proposal]]
+
+OPEN ITEMS
+[Bullet list of anything unresolved, pending confirmation, or flagged for follow-up.
+Format: "[Item] — Owner: [who]"]
+---
+
+RULES:
+- Only use information from the notes — do not invent any details
+- If a field has no data, write: [MISSING — confirm with customer]
+- Flag anything uncertain inline with [VERIFY]
+- Keep tone professional but collaborative — this is a working document, not a legal contract
+- Short and accurate beats long and padded
+- Do not include pricing specifics unless they were explicitly stated in the notes
+
+PASTE YOUR MEETING NOTES BELOW:
+[your notes here]</pre>
+      </div>
+
+      <div class="section-title">Why LOUs Close More Deals</div>
+      <p>A prospect who reviews and confirms a Letter of Understanding has psychologically committed. It surfaces disagreement before it becomes a late-stage surprise. It also gives your champion something concrete to walk upstairs with — which is more powerful than another slide deck.</p>
+
+      <div class="section-title">Works After</div>
+      <div class="chip-row">
+        <span class="chip">discovery call</span>
+        <span class="chip">evaluation kickoff</span>
+        <span class="chip">POC review</span>
+        <span class="chip">executive alignment</span>
+        <span class="chip">closing call</span>
+        <span class="chip">proposal walkthrough</span>
+      </div>
+    </div>
+
+    <!-- SKILL: MAP -->
+    <div class="tab-content" id="tab-skill-map">
+      <div class="doc-header">
+        <div class="doc-label">Skill · General</div>
+        <div class="doc-title">Mutual Action Plan</div>
+        <div class="doc-desc">Turn meeting notes into a structured MAP with milestones, owners, and dates on both sides. The document that separates real deals from optimistic pipeline.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-meddic">Decision Process</span>
+          <span class="method-badge badge-force">Command of the Sale</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Why MAPs matter:</strong> A prospect who won't co-sign a Mutual Action Plan isn't a real buyer. The MAP is also your best tool for accelerating deals — it makes the path to close visible and shared.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-mutual-action-plan.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: Mutual Action Plan (MAP) Generator
+
+You are a B2B sales assistant helping a rep create a Mutual Action 
+Plan from meeting notes. A MAP documents the agreed steps, owners, 
+and timeline on both sides to reach a decision.
+
+This document is shared with the prospect — keep the tone 
+collaborative and professional, not vendor-pushy.
+
+FILL IN BEFORE SUBMITTING:
+- Company / deal name:
+- Contact(s) and their roles:
+- Our rep name:
+- Deal stage:
+- Stated close date or decision deadline (if known):
+- What was discussed / agreed on the last call:
+- Outstanding open items on both sides:
+- Any evaluation criteria mentioned:
+- Technical, legal, or procurement steps they've mentioned:
+
+---
+
+OUTPUT FORMAT:
+---
+MUTUAL ACTION PLAN
+[Vendor Name] ↔ [Prospect Company]
+
+Date Created: [today]
+Rep: [name]
+Prospect Contact(s): [names and titles]
+Target Decision Date: [date or MISSING — confirm with buyer]
+
+SHARED OBJECTIVE
+[1-2 sentences on what we're working toward together. 
+Frame it around their business goal, not the sale.]
+
+MILESTONES
+
+| # | Milestone | Owner | Target Date | Status |
+|---|-----------|-------|-------------|--------|
+| 1 | [step] | [who] | [date] | Pending |
+| 2 | [step] | [who] | [date] | Pending |
+[Generate as many rows as warranted by the notes]
+
+OPEN ITEMS
+[Bullet list of unresolved questions or dependencies on either side]
+- [Item 1] — Owner: [name]
+- [Item 2] — Owner: [name]
+
+SUCCESS CRITERIA
+[How will both parties know the evaluation was successful?
+Extract from notes or flag as: MISSING — align on this next call]
+
+NOTES
+[Anything else relevant — procurement process, technical requirements, 
+stakeholders to loop in, potential blockers]
+---
+
+RULES:
+- Only use info from the notes provided
+- Flag anything missing as [MISSING — confirm with buyer]
+- Milestones should alternate between rep-owned and buyer-owned steps
+- Do not pad — short and accurate beats long and vague
+
+PASTE YOUR NOTES:
+[paste here]</pre>
+      </div>
+    </div>
+
+    <!-- SKILL: Objection Handler -->
+    <div class="tab-content" id="tab-skill-objection">
+      <div class="doc-header">
+        <div class="doc-label">Skill · General</div>
+        <div class="doc-title">Objection Handler</div>
+        <div class="doc-desc">Stuck on a pushback? Drop in the objection and deal context. Get three response approaches — each with different intent — plus coaching on what's really going on underneath it.</div>
+        <div class="method-badges">
+          <span class="method-badge badge-sandler">Sandler Reversal</span>
+          <span class="method-badge badge-force">Negative Consequences</span>
+          <span class="method-badge badge-general">Any Stage</span>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">skill-objection-handler.txt</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>SKILL: Objection Handler
+
+You are a senior B2B sales coach helping a rep work through a 
+specific objection. Draw on Sandler (explore, don't push), Force 
+Management (negative consequences of inaction), and general 
+enterprise sales principles.
+
+Give three distinct response approaches so the rep can choose 
+what fits their relationship and deal stage.
+
+FILL IN BEFORE SUBMITTING:
+- The objection (exact words if possible):
+- Who said it (role — end user, champion, economic buyer, procurement):
+- Deal stage (early / mid / late):
+- Relationship with this person (new / building / established):
+- What you've already tried (if anything):
+- What you believe is really going on under the objection:
+
+---
+
+OUTPUT FORMAT:
+
+## THE OBJECTION DECODED
+[What's actually going on beneath this objection? Is it a budget 
+objection masking a priority problem? A "not now" masking a champion 
+issue? A "too expensive" masking "I can't justify this internally?"
+Be direct — don't soften it.]
+
+## RESPONSE 1: Sandler Reversal (Explore, Don't Push)
+[Acknowledge the objection fully, then ask a question that gets 
+them to elaborate. The goal is to understand the real issue, 
+not defeat the stated one.]
+When to use: [1 line — relationship type or deal stage]
+
+## RESPONSE 2: Direct / Reframe
+[Address it head-on. Use a proof point, a reframe around business 
+impact, or the Force Management negative consequences of staying 
+with the status quo.]
+When to use: [1 line]
+
+## RESPONSE 3: Clarify and Qualify
+[Use this when you're not sure if the objection is real or a 
+brush-off. A short, non-defensive question that forces specificity 
+and tells you whether this deal is real.]
+When to use: [1 line]
+
+## WHAT TO AVOID
+[1-2 things not to say or do in response to this specific objection.
+Be specific — not "don't be pushy" but the actual words or moves 
+that blow this type of objection up.]
+
+---
+
+FILL IN YOUR OBJECTION + CONTEXT:
+[paste here]</pre>
+      </div>
+
+      <div class="section-title">Common Objections This Works For</div>
+      <div class="chip-row">
+        <span class="chip">"It's too expensive"</span>
+        <span class="chip">"We're happy with our current solution"</span>
+        <span class="chip">"Send me info and I'll review"</span>
+        <span class="chip">"We need to loop in [person] first"</span>
+        <span class="chip">"Let's revisit next quarter"</span>
+        <span class="chip">"We're going in a different direction"</span>
+        <span class="chip">"We're already talking to [competitor]"</span>
+        <span class="chip">"I need to get budget approval"</span>
+        <span class="chip">"This isn't a priority right now"</span>
+      </div>
+    </div>
+
+    <!-- SETUP GUIDE -->
+    <div class="tab-content" id="tab-setup">
+      <div class="doc-header">
+        <div class="doc-label">Admin / Enablement</div>
+        <div class="doc-title">Setup Guide</div>
+        <div class="doc-desc">From zero to a fully deployed team Claude Project in about two hours. No IT required.</div>
+      </div>
+
+      <div class="section-title">Step 1: Fill In SOUL.md</div>
+      <ol class="step-list">
+        <li>Open the <strong>SOUL.md tab</strong> in this toolkit and copy the template</li>
+        <li>Fill in every section with your company's real info — voice, products, buyers, deal stages, competitors</li>
+        <li>The more specific you are, the better every Claude output will be. Don't skip sections.</li>
+      </ol>
+
+      <div class="section-title">Step 2: Create The Claude Project</div>
+      <ol class="step-list">
+        <li>Log into <strong>claude.ai</strong> — you'll need a Pro or Team account</li>
+        <li>Click <strong>Projects</strong> in the left sidebar → <strong>New Project</strong></li>
+        <li>Name it something like: <code>[Team] Sales AI Assistant</code></li>
+        <li>Open the project → click <strong>Project Instructions</strong></li>
+        <li>Paste your completed SOUL.md into the instructions field and save</li>
+        <li>Every conversation in this project will now start with your full company context</li>
+      </ol>
+
+      <div class="section-title">Step 3: Distribute The Playbook</div>
+      <ol class="step-list">
+        <li>Copy CLAUDE.md from this toolkit</li>
+        <li>Paste it into a shared doc (Notion, Confluence, SharePoint, Google Docs)</li>
+        <li>Pin the link in your team Slack or Teams channel — wherever they actually look</li>
+      </ol>
+
+      <div class="section-title">Step 4: Run A Live Demo (20 Min)</div>
+      <ol class="step-list">
+        <li>Open the Claude Project on a shared screen with your team</li>
+        <li>Pick a real deal from your pipeline (anonymize if needed)</li>
+        <li>Paste the <strong>Discovery Prep</strong> skill + 4-5 lines of deal context — show the output live</li>
+        <li>Then do the same with <strong>Follow-Up Email</strong> using a recent call</li>
+        <li>Have each rep try one skill with their own deal — live, in the room, right then</li>
+      </ol>
+
+      <div class="info-box">
+        <strong>What converts fastest:</strong> The Follow-Up Email skill. Every rep has a call they need to follow up on. Show it working on a real one and they'll use it tomorrow morning. Then introduce MEDDIC once they're comfortable.
+      </div>
+
+      <div class="section-title">Step 5: Sustain Adoption</div>
+      <ol class="step-list">
+        <li><strong>Designate a champion</strong> — one person who collects feedback and updates skills quarterly</li>
+        <li><strong>Add skills over time</strong> — start with 2, add more as you identify repetitive writing tasks</li>
+        <li><strong>Review SOUL.md quarterly</strong> — update when products, competitors, or positioning changes</li>
+        <li><strong>Share wins in the team channel</strong> — "Claude helped me close X" normalizes the behavior</li>
+      </ol>
+
+      <div class="section-title">What You Need</div>
+      <div class="chip-row">
+        <span class="chip">Claude Pro or Team account</span>
+        <span class="chip">Projects feature enabled</span>
+        <span class="chip">~2 hrs setup time</span>
+        <span class="chip">One internal champion</span>
+        <span class="chip">No IT involvement required</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function show(id, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
